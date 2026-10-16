@@ -34,7 +34,9 @@ static const remap_t remaps[] = {
     {LGUI(LSFT(KC_S)), LCTL(LGUI(LSFT(KC_4)))},        // region snip to clipboard
     {LGUI(KC_TAB), KC_MCTL},                           // task view -> Mission Control
     // Layer 0 (base)
-    {LALT(KC_LEFT_SHIFT), LCTL(KC_SPC)}, // switch input language ("Select previous input source")
+    // Switch input language. F18 is bound in macOS to "Select the previous input source" instead of
+    // the default Ctrl+Space, so Ctrl+Space stays free for apps (e.g. IDE autocomplete).
+    {LALT(KC_LEFT_SHIFT), KC_F18},
     // Layer 6 (mouse)
     {KC_WWW_BACK, LGUI(KC_LBRC)},
     {KC_WWW_FORWARD, LGUI(KC_RBRC)},
