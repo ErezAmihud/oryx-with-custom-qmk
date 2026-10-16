@@ -89,14 +89,20 @@ bool mac_mode_process_record(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
-// Runs after Oryx's rgb_matrix_indicators_user, so this paints over the layer map.
-bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+// Hooked at the _kb level, not rgb_matrix_indicators_advanced_user: the advanced hook runs per LED
+// chunk, and Oryx's rgb_matrix_indicators_user repaints every LED after the last chunk, which
+// overwrote the indicator. Calling Oryx's hook first guarantees we paint last.
+// The Moonlander keyboard code doesn't define this hook; if ZSA adds one, the link fails loudly.
+bool rgb_matrix_indicators_kb(void) {
+    if (!rgb_matrix_indicators_user()) {
+        return false;
+    }
     if (keyboard_config.disable_layer_led || get_highest_layer(layer_state) != MAC_MODE_INDICATOR_LAYER) {
         return true;
     }
     RGB rgb = hsv_to_rgb(is_mac ? MAC_COLOR : WINDOWS_COLOR);
     // Same scaling as Oryx's layer colors, so the indicator follows the brightness keys.
     float f = (float)rgb_matrix_get_val() / UINT8_MAX;
-    RGB_MATRIX_INDICATOR_SET_COLOR(MAC_MODE_INDICATOR_LED, f * rgb.r, f * rgb.g, f * rgb.b);
+    rgb_matrix_set_color(MAC_MODE_INDICATOR_LED, f * rgb.r, f * rgb.g, f * rgb.b);
     return true;
 }
